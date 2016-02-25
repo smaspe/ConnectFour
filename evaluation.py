@@ -9,7 +9,7 @@ def linear_scan(grid, color):
         for cell in row:
             if cell == color:
                 color_count += 1
-            else if cell == EMPTY:
+            elif cell == EMPTY:
                 three = True
             else:
                 color_count = 0
@@ -18,6 +18,8 @@ def linear_scan(grid, color):
                 return WIN
             if color_count == 3 and three:
                 three_count += 1
+                color_count = 0
+                three = False
     return three_count
 
 def diag_scan(grid, color):
@@ -34,7 +36,7 @@ def diag_scan(grid, color):
             cell = grid[x][y]
             if cell == color:
                 color_count += 1
-            else if cell == EMPTY:
+            elif cell == EMPTY:
                 three = True
             else:
                 color_count = 0
@@ -43,6 +45,8 @@ def diag_scan(grid, color):
                 return WIN
             if color_count == 3 and three:
                 three_count += 1
+                color_count = 0
+                three = False
             y -= 1
             x += 1
     return three_count
