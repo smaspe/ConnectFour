@@ -1,5 +1,6 @@
 EMPTY = 0
 WIN = 100
+LOSE = -WIN
 
 # TODO for better choosing, count only distinct empty cells as threes
 def generic_scan(gen, color):
@@ -53,31 +54,24 @@ def diag_scan(grid, color):
             yield row_gen(x, y, len(grid[0]))
     return generic_scan(grid_gen(grid), color)
 
-def scan(grid, color):
+def scan(grid, me, op):
     inverted_grid = zip(*grid)
-    # scan horizontally
+
     three_count = 0
-    res = linear_scan(grid, color)
-    if res == WIN:
-        return WIN
-    three_count += res
+    # Opponent first
+    for f in (linear_scan, diag_scan):
+        for g in (grid, inverted_grid):
+            res = f(g, op)
+            if res == WIN:
+                return LOSE
+            three_count -= res
 
-    # scan vertically
-    res = linear_scan(inverted_grid, color)
-    if res == WIN:
-        return WIN
-    three_count += res
-
-    # scan diagonally
-    res = diag_scan(grid, color)
-    if res == WIN:
-        return WIN
-    three_count += res
-
-    # scan diagonally (the other one)
-    res = diag_scan(inverted_grid, color)
-    if res == WIN:
-        return WIN
-    three_count += res
+    # Then me
+    for f in (linear_scan, diag_scan):
+        for g in (grid, inverted_grid):
+            res = f(g, me)
+            if res == WIN:
+                return WIN
+            three_count += res
 
     return three_count
