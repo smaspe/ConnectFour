@@ -1,4 +1,5 @@
 import evaluation
+import sys
 
 settings = {}
 current_grid = [[0]]
@@ -46,6 +47,7 @@ def minimax(grid, depth, is_max_player):
                 break
         return best
 
+first = True
 if __name__ == '__main__':
     while True:
         line = raw_input()
@@ -67,10 +69,13 @@ if __name__ == '__main__':
             elif content[2] == 'round':
                 current_round = int(content[3])
         elif content[0] == 'action':
-            if current_round == 1:
-                print('place_disk %d' % (settings['field_columns'] // 2))
+            if first:
+                first = False
+                sys.stdout.write(('place_disc %d' % (settings['field_columns'] // 2)) + '\n')
+                sys.stdout.flush()
                 continue
-            values = sorted((minimax(g, 2, False), i) for i, g in nodes(current_grid, me))
-            print('place_disk %d' % values[-1][1])
+            values = sorted((minimax(g, 3, False), i) for i, g in nodes(current_grid, me))
+            sys.stdout.write(('place_disc %d' % values[-1][1]) + '\n')
+            sys.stdout.flush()
             # TODO get the remaining time?
             # TODO get the per-turn time?
