@@ -1,6 +1,7 @@
 EMPTY = 0
 WIN = 100
 
+# TODO for better choosing, count only distinct empty cells as threes
 def generic_scan(gen, color):
     threes = 0
     for row in gen:
