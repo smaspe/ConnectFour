@@ -1,5 +1,4 @@
 import evaluation
-import fileinput
 
 settings = {}
 current_grid = [[0]]
@@ -47,7 +46,10 @@ def minimax(grid, depth, is_max_player):
                 break
         return best
 
-for line in fileinput.input():
+while True:
+    line = raw_input()
+    if not line:
+        continue
     content = line.split()
     if content[0] == 'settings':
         try:
@@ -64,7 +66,10 @@ for line in fileinput.input():
         elif content[2] == 'round':
             current_round = int(content[3])
     elif content[0] == 'action':
-        values = sorted((minimax(g, 2, False), i) for i, g in nodes(grid, me)
+        if current_round == 1:
+            print('place_disk %d' % settings['field_columns'] // 2)
+            continue
+        values = sorted((minimax(g, 2, False), i) for i, g in nodes(current_grid, me))
         print('place_disk %d' % values[-1][1])
         # TODO get the remaining time?
         # TODO get the per-turn time?
