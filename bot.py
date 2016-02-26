@@ -46,30 +46,31 @@ def minimax(grid, depth, is_max_player):
                 break
         return best
 
-while True:
-    line = raw_input()
-    if not line:
-        continue
-    content = line.split()
-    if content[0] == 'settings':
-        try:
-            settings[content[1]] = int(content[2])
-        except:
-            settings[content[1]] = content[2]
-        if content[1] == 'your_botid':
-            me = int(content[2])
-            # assuming the ids are always 1 and 2?
-            op = [2,1][me - 1]
-    elif content[0] == 'update':
-        if content[2] == 'field':
-            current_grid = [[int(x) for x in y.split(',')] for y in content[3].split(';')]
-        elif content[2] == 'round':
-            current_round = int(content[3])
-    elif content[0] == 'action':
-        if current_round == 1:
-            print('place_disk %d' % settings['field_columns'] // 2)
+if __name__ == '__main__':
+    while True:
+        line = raw_input()
+        if not line:
             continue
-        values = sorted((minimax(g, 2, False), i) for i, g in nodes(current_grid, me))
-        print('place_disk %d' % values[-1][1])
-        # TODO get the remaining time?
-        # TODO get the per-turn time?
+        content = line.split()
+        if content[0] == 'settings':
+            try:
+                settings[content[1]] = int(content[2])
+            except:
+                settings[content[1]] = content[2]
+            if content[1] == 'your_botid':
+                me = int(content[2])
+                # assuming the ids are always 1 and 2?
+                op = [2,1][me - 1]
+        elif content[0] == 'update':
+            if content[2] == 'field':
+                current_grid = [[int(x) for x in y.split(',')] for y in content[3].split(';')]
+            elif content[2] == 'round':
+                current_round = int(content[3])
+        elif content[0] == 'action':
+            if current_round == 1:
+                print('place_disk %d' % (settings['field_columns'] // 2))
+                continue
+            values = sorted((minimax(g, 2, False), i) for i, g in nodes(current_grid, me))
+            print('place_disk %d' % values[-1][1])
+            # TODO get the remaining time?
+            # TODO get the per-turn time?
