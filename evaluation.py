@@ -41,7 +41,7 @@ def diag_scan(grid, color):
     def grid_gen(grid):
         def row_gen(x, y, max_x):
             while x < max_x and y > 0:
-                cell = grid[x][y]
+                cell = grid[y][x]
                 yield cell
                 y -= 1
                 x += 1
