@@ -1,56 +1,56 @@
 EMPTY = 0
 WIN = 100
 
-def linear_scan(grid, color):
-    three_count = 0
-    for row in grid:
-        color_count = 0
+def generic_scan(gen, color):
+    threes = 0
+    for row in gen:
+        four_count = 0
+        three_count = 0
         three = False
         for cell in row:
             if cell == color:
-                color_count += 1
+                four_count += 1
+                three_count += 1
             elif cell == EMPTY:
                 three = True
+                four_count = 0
             else:
-                color_count = 0
+                four_count = 0
+                three_count = 0
                 three = False
-            if color_count == 4:
+            if four_count == 4:
                 return WIN
-            if color_count == 3 and three:
-                three_count += 1
-                color_count = 0
+            if three_count == 3 and three:
+                threes += 1
+                three_count = 0
                 three = False
-    return three_count
+    return threes
+
+def linear_scan(grid, color):
+    def grid_gen(grid):
+        def row_gen(row):
+            for cell in row:
+                yield cell
+        for row in grid:
+            yield row_gen(row)
+    return generic_scan(grid_gen(grid), color)
 
 def diag_scan(grid, color):
-    three_count = 0
-    for i in range(4, len(grid) + len(grid[0]) - 4):
-        if i >= len(grid):
-            y = len(grid) - 1
-        else:
-            y = i
-        x = i - y
-        color_count = 0
-        three = False
-        while x < len(grid[0]) and y > 0:
-            cell = grid[x][y]
-            if cell == color:
-                color_count += 1
-            elif cell == EMPTY:
-                three = True
+    def grid_gen(grid):
+        def row_gen(x, y, max_x):
+            while x < max_x and y > 0:
+                cell = grid[x][y]
+                yield cell
+                y -= 1
+                x += 1
+        for i in range(4, len(grid) + len(grid[0]) - 4):
+            if i >= len(grid):
+                y = len(grid) - 1
             else:
-                color_count = 0
-                three = False
-            if color_count == 4:
-                return WIN
-            if color_count == 3 and three:
-                three_count += 1
-                color_count = 0
-                three = False
-            y -= 1
-            x += 1
-    return three_count
-
+                y = i
+            x = i - y
+            yield row_gen(x, y, len(grid[0]))
+    return generic_scan(grid_gen(grid), color)
 
 def scan(grid, color):
     inverted_grid = zip(*grid)
