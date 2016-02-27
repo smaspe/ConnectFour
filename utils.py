@@ -36,7 +36,8 @@ def play(grid, column, color):
     return None
 
 def nodes(grid, player):
-    for i in range(len(grid[0])):
+    l = len(grid[0])
+    for i in sorted(range(l), key=lambda x: abs(x - l // 2)):
         new_grid = play(grid, i, player)
         if new_grid:
             yield i, new_grid
