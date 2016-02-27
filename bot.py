@@ -6,6 +6,7 @@ current_grid = [[0]]
 current_round = 0
 me = -1
 op = -1
+current_depth = 4
 
 def play(grid, column, color):
     grid = [x[:] for x in grid]
@@ -47,7 +48,6 @@ def minimax(grid, depth, is_max_player):
                 break
         return best
 
-first = True
 if __name__ == '__main__':
     while True:
         line = raw_input()
@@ -69,12 +69,16 @@ if __name__ == '__main__':
             elif content[2] == 'round':
                 current_round = int(content[3])
         elif content[0] == 'action':
-            if first:
-                first = False
+            if current_round == 1:
                 sys.stdout.write(('place_disc %d' % (settings['field_columns'] // 2)) + '\n')
                 sys.stdout.flush()
                 continue
-            values = sorted((minimax(g, 3, False), i) for i, g in nodes(current_grid, me))
+            time = int(content[2])
+            if time == settings['timebank']:
+                current_depth += 1
+            elif time < settings['timebank'] / 2:
+                current_depth -= 2
+            values = sorted((minimax(g, current_depth, False), i) for i, g in nodes(current_grid, me))
             sys.stdout.write(('place_disc %d' % values[-1][1]) + '\n')
             sys.stdout.flush()
             # TODO get the remaining time?

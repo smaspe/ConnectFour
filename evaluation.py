@@ -3,6 +3,7 @@ WIN = 100
 LOSE = -WIN
 
 # TODO for better choosing, count only distinct empty cells as threes
+# TODO also count 0 1 1 1 0 as 2
 def generic_scan(gen, color):
     threes = 0
     for row in gen:
@@ -64,7 +65,7 @@ def scan(grid, me, op):
             res = f(g, op)
             if res == WIN:
                 return LOSE
-            three_count -= res
+            # three_count -= res
 
     # Then me
     for f in (linear_scan, diag_scan):
