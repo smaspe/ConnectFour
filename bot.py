@@ -54,5 +54,3 @@ if __name__ == '__main__':
             time = int(content[2])
             sys.stdout.write(('place_disc %d' % select_move(current_grid, time, settings)) + '\n')
             sys.stdout.flush()
-            # TODO get the remaining time?
-            # TODO get the per-turn time?
