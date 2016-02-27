@@ -14,7 +14,7 @@ def select_move(grid, time, settings):
         current_depth += 1
     elif time == settings['time_per_move']:
         current_depth = 3
-    elif time < settings['timebank'] / 2:
+    elif time < settings['timebank'] / 2 and current_depth > 3:
         current_depth -= 1
     me = settings['your_botid']
     # assuming the ids are always 1 and 2?
