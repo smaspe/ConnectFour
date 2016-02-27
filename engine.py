@@ -19,6 +19,13 @@ grid = [[0 for _ in range(7)] for _ in range(6)]
 
 #value = '0,0,0,0,0,0,1;0,0,0,2,0,0,1;0,2,0,1,0,2,1;0,2,0,2,0,1,2;0,1,1,2,0,2,1;0,2,2,1,1,2,1'
 #grid = [[int(x) for x in y.split(',')] for y in value.split(';')]
+value = '''0|0|0|0|0|0|0
+0|0|0|0|2|0|0
+0|0|0|2|1|2|0
+0|0|0|1|1|1|0
+0|0|0|1|2|2|0
+0|0|1|1|2|2|0'''
+grid = [[int(x) for x in y.split('|')] for y in value.split('\n')]
 
 for i in range(2, 22):
     print 'Round %d' % i
