@@ -1,52 +1,26 @@
-import evaluation
 import sys
+from utils import nodes
+from minimax import minimax
 
 settings = {}
 current_grid = [[0]]
 current_round = 0
-me = -1
-op = -1
+
 current_depth = 4
 
-def play(grid, column, color):
-    grid = [x[:] for x in grid]
-    for row in reversed(grid):
-        if row[column] == 0:
-            row[column] = color
-            return grid
-    # Can't play there
-    return None
-
-def nodes(grid, player):
-    for i in range(settings['field_columns']):
-        new_grid = play(grid, i, player)
-        if new_grid:
-            yield i, new_grid
-
-def minimax(grid, depth, is_max_player):
-    depth -= 1
-    if is_max_player:
-        best = evaluation.LOSE
-        for i, new_grid in nodes(grid, me):
-            current_value = evaluation.scan(new_grid, me ,op)
-            if current_value == evaluation.WIN or depth == 0:
-                return current_value
-            v = minimax(new_grid, depth, False)
-            best = max(best, v)
-            if best == evaluation.WIN:
-                break
-        return best
-    else:
-        best = evaluation.WIN
-        for i, new_grid in nodes(grid, op):
-            current_value = evaluation.scan(new_grid, me ,op)
-            if current_value == evaluation.LOSE or depth == 0:
-                return current_value
-            v = minimax(new_grid, depth, True)
-            best = min(best, v)
-            if best == evaluation.LOSE:
-                break
-        return best
+def select_move(grid, time, settings):
+    global current_depth
+    if time == settings['timebank']:
+        current_depth += 1
+    elif time == settings['time_per_move']:
+        current_depth = 3
+    elif time < settings['timebank'] / 2:
+        current_depth -= 1
+    me = settings['your_botid']
+    # assuming the ids are always 1 and 2?
+    op = [2,1][me - 1]
+    values = sorted((minimax(g, current_depth, False, me, op), i) for i, g in nodes(grid, me))
+    return values[-1][1]
 
 if __name__ == '__main__':
     while True:
@@ -74,12 +48,7 @@ if __name__ == '__main__':
                 sys.stdout.flush()
                 continue
             time = int(content[2])
-            if time == settings['timebank']:
-                current_depth += 1
-            elif time < settings['timebank'] / 2:
-                current_depth -= 2
-            values = sorted((minimax(g, current_depth, False), i) for i, g in nodes(current_grid, me))
-            sys.stdout.write(('place_disc %d' % values[-1][1]) + '\n')
+            sys.stdout.write(('place_disc %d' % select_move(current_grid, time, settings)) + '\n')
             sys.stdout.flush()
             # TODO get the remaining time?
             # TODO get the per-turn time?

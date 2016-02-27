@@ -65,7 +65,7 @@ def scan(grid, me, op):
             res = f(g, op)
             if res == WIN:
                 return LOSE
-            # three_count -= res
+            three_count -= res
 
     # Then me
     for f in (linear_scan, diag_scan):
@@ -73,6 +73,6 @@ def scan(grid, me, op):
             res = f(g, me)
             if res == WIN:
                 return WIN
-            three_count += res
+            # three_count += res
 
     return three_count
