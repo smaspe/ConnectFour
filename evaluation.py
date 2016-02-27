@@ -1,3 +1,5 @@
+from utils import window, diag_grid_gen
+
 EMPTY = 0
 WIN = 100
 LOSE = -WIN
@@ -7,26 +9,12 @@ LOSE = -WIN
 def generic_scan(gen, color):
     threes = 0
     for row in gen:
-        four_count = 0
-        three_count = 0
-        three = False
-        for cell in row:
-            if cell == color:
-                four_count += 1
-                three_count += 1
-            elif cell == EMPTY:
-                three = True
-                four_count = 0
-            else:
-                four_count = 0
-                three_count = 0
-                three = False
-            if four_count == 4:
+        for seq in window(row, 4):
+            cnt = seq.count(color)
+            if cnt == 4:
                 return WIN
-            if three_count == 3 and three:
+            if cnt == 3 and seq.count(EMPTY) == 1:
                 threes += 1
-                three_count = 0
-                three = False
     return threes
 
 def linear_scan(grid, color):
@@ -39,40 +27,23 @@ def linear_scan(grid, color):
     return generic_scan(grid_gen(grid), color)
 
 def diag_scan(grid, color):
-    def grid_gen(grid):
-        def row_gen(x, y, max_x):
-            while x < max_x and y > 0:
-                cell = grid[y][x]
-                yield cell
-                y -= 1
-                x += 1
-        for i in range(4, len(grid) + len(grid[0]) - 4):
-            if i >= len(grid):
-                y = len(grid) - 1
-            else:
-                y = i
-            x = i - y
-            yield row_gen(x, y, len(grid[0]))
-    return generic_scan(grid_gen(grid), color)
+    return generic_scan(diag_grid_gen(grid), color)
 
 def scan(grid, me, op):
     inverted_grid = zip(*grid)
+    reversed_grid = list(reversed(grid))
 
     three_count = 0
     # Opponent first
-    for f in (linear_scan, diag_scan):
-        for g in (grid, inverted_grid):
-            res = f(g, op)
-            if res == WIN:
-                return LOSE
-            three_count -= res
+    for res in (linear_scan(grid, op), linear_scan(inverted_grid, op), diag_scan(grid, op), diag_scan(reversed_grid, op)):
+        if res == WIN:
+            return LOSE
+        three_count -= res
 
     # Then me
-    for f in (linear_scan, diag_scan):
-        for g in (grid, inverted_grid):
-            res = f(g, me)
-            if res == WIN:
-                return WIN
-            # three_count += res
+    for res in (linear_scan(grid, me), linear_scan(inverted_grid, me), diag_scan(grid, me), diag_scan(reversed_grid, me)):
+        if res == WIN:
+            return WIN
+        # three_count += res
 
     return three_count

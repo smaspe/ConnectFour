@@ -19,8 +19,12 @@ def select_move(grid, time, settings):
     me = settings['your_botid']
     # assuming the ids are always 1 and 2?
     op = [2,1][me - 1]
-    values = sorted((minimax(g, current_depth, False, me, op), i) for i, g in nodes(grid, me))
-    return values[-1][1]
+
+    values = minimax(grid, current_depth, True, me, op)
+    if values and values[1]:
+        return values[1][-1]
+    # Nothing of worth was found (we probably lost)
+    return next(nodes(grid, me))[0]
 
 if __name__ == '__main__':
     while True:

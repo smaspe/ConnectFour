@@ -17,7 +17,10 @@ for l in init:
 
 grid = [[0 for _ in range(7)] for _ in range(6)]
 
-for i in range(1, 22):
+#value = '0,0,0,0,0,0,1;0,0,0,2,0,0,1;0,2,0,1,0,2,1;0,2,0,2,0,1,2;0,1,1,2,0,2,1;0,2,2,1,1,2,1'
+#grid = [[int(x) for x in y.split(',')] for y in value.split(';')]
+
+for i in range(2, 22):
     print 'Round %d' % i
     bot_p.stdin.write('update game round %d\n' % i)
     bot_p.stdin.write('update game field %s\n' % (';'.join(','.join(str(cell) for cell in row) for row in grid)))
@@ -25,8 +28,9 @@ for i in range(1, 22):
 
     cmd = [None]
     while cmd[0] != 'place_disc':
-        cmd = bot_p.stdout.readline().split()
+        cmd = bot_p.stdout.readline()
         print cmd
+        cmd = cmd.split()
 
     column = int(cmd[1])
     grid = utils.play(grid, column, 1)
