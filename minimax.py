@@ -16,6 +16,9 @@ def minimax(my_discs, op_discs, depth, is_max_player, cols, rows):
                 best[1].append(disc)
             if best[0] == evaluation.WIN:
                 break
+        if best[0] == evaluation.LOSE - 1:
+            # no move to play, draw
+            best = (0, [])
         return best
     else:
         best = (evaluation.WIN + 1, [])
@@ -31,4 +34,8 @@ def minimax(my_discs, op_discs, depth, is_max_player, cols, rows):
                 # No early escape to capture shorter paths.
 #            if best[0] == evaluation.LOSE:
 #                break
+
+        if best[0] == evaluation.WIN + 1:
+            # no move to play, draw
+            best = (0, [])
         return best

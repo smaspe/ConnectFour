@@ -35,8 +35,8 @@ def select_move(my_discs, op_discs, op_move, time, settings):
         move[1].append(disc)
         moves.append(move)
     if not moves or not moves[0] or not moves[0][1]:
-        # Nothing of worth was found (we probably lost)
-        return next(utils.nodes(my_discs, op_discs))[0][0]
+        # No valid move found
+        return 0
     if log:
         print 'minimax result'
         for _move in moves:
