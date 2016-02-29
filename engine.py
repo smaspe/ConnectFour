@@ -15,22 +15,25 @@ init = ['settings timebank 10000',
 for l in init:
     bot_p.stdin.write(l + '\n')
 
-grid = [[0 for _ in range(7)] for _ in range(6)]
-
 #value = '0,0,0,0,0,0,1;0,0,0,2,0,0,1;0,2,0,1,0,2,1;0,2,0,2,0,1,2;0,1,1,2,0,2,1;0,2,2,1,1,2,1'
 #grid = [[int(x) for x in y.split(',')] for y in value.split(';')]
-value = '''0|0|0|0|0|0|0
-0|0|0|0|2|0|0
-0|0|0|2|1|2|0
-0|0|0|1|1|1|0
-0|0|0|1|2|2|0
-0|0|1|1|2|2|0'''
-grid = [[int(x) for x in y.split('|')] for y in value.split('\n')]
+value = '''
+| 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2 | 0 | 0 | 0 | 1 | 0 | 0 |
+| 1 | 0 | 0 | 2 | 2 | 0 | 0 |
+| 1 | 0 | 2 | 2 | 2 | 0 | 0 |
+| 1 | 0 | 2 | 1 | 2 | 2 | 0 |
+'''
+grid = [[int(x.strip()) for x in y.split('|') if x.strip()] for y in value.strip().split('\n')]
+my_discs, op_discs = utils.grid_as_set(grid, 1, 2)
+
+my_discs, op_discs = set(), set()
 
 for i in range(2, 22):
     print 'Round %d' % i
     bot_p.stdin.write('update game round %d\n' % i)
-    bot_p.stdin.write('update game field %s\n' % (';'.join(','.join(str(cell) for cell in row) for row in grid)))
+    bot_p.stdin.write('update game field %s\n' % (';'.join(','.join(str(cell) for cell in row) for row in utils.engine_grid(my_discs, op_discs))))
     bot_p.stdin.write('action move 500\n')
 
     cmd = [None]
@@ -40,13 +43,13 @@ for i in range(2, 22):
         cmd = cmd.split()
 
     column = int(cmd[1])
-    grid = utils.play(grid, column, 1)
+    my_discs |= set([(column, min([y for (x, y) in my_discs | op_discs if x == column] + [6]) - 1)])
+    utils.print_grid(my_discs, op_discs)
 
-    print '\n'.join('|'.join(str(cell) for cell in row) for row in grid)
-
-    new_grid = None
-    while not new_grid:
+    y = -1
+    while y < 0:
         column = int(raw_input('Your move (0-6) '))
-        new_grid = utils.play(grid, column, 2)
-    grid = new_grid
-    print '\n'.join('|'.join(str(cell) for cell in row) for row in grid)
+        y = min([y for (x, y) in my_discs | op_discs if x == column] + [6]) - 1
+    op_discs |= set([(column, y)])
+
+    utils.print_grid(my_discs, op_discs)

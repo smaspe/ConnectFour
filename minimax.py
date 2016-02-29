@@ -2,31 +2,33 @@ import evaluation
 
 from utils import nodes
 
-def minimax(grid, depth, is_max_player, me, op):
+def minimax(my_discs, op_discs, depth, is_max_player, cols, rows):
     if is_max_player:
         best = (evaluation.LOSE - 1, [])
         node = -1
-        for i, new_grid in nodes(grid, me):
-            current_value = evaluation.scan(new_grid, me ,op)
+        for disc, new_discs in nodes(my_discs, op_discs, cols, rows):
+            current_value = evaluation.scan(new_discs, disc)
             if current_value == evaluation.WIN or depth == 0:
-                return (current_value, [i])
-            v = minimax(new_grid, depth - 1, False, me, op)
+                return (current_value, [disc])
+            v = minimax(new_discs, op_discs, depth - 1, False, cols, rows)
             if v[0] > best[0]:
                 best = v
-                best[1].append(i)
+                best[1].append(disc)
             if best[0] == evaluation.WIN:
                 break
         return best
     else:
         best = (evaluation.WIN + 1, [])
-        for i, new_grid in nodes(grid, op):
-            current_value = evaluation.scan(new_grid, me ,op)
-            if current_value == evaluation.LOSE or depth == 0:
-                return (current_value, [i])
-            v = minimax(new_grid, depth - 1, True, me, op)
+        for disc, new_discs in nodes(op_discs, my_discs, cols, rows):
+            current_value = evaluation.scan(new_discs, disc)
+            if current_value == evaluation.WIN or depth == 0:
+                current_value = -current_value
+                return (current_value, [disc])
+            v = minimax(my_discs, new_discs, depth - 1, True, cols, rows)
             if v[0] < best[0]:
                 best = v
-                best[1].append(i)
-            if best[0] == evaluation.LOSE:
-                break
+                best[1].append(disc)
+                # No early escape to capture shorter paths.
+#            if best[0] == evaluation.LOSE:
+#                break
         return best

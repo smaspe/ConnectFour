@@ -1,43 +1,49 @@
 from itertools import islice
 
-def window(seq, n=2):
-    "Returns a sliding window (of width n) over data from the iterable"
-    "   s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ...                   "
-    it = iter(seq)
-    result = tuple(islice(it, n))
-    if len(result) == n:
-        yield result
-    for elem in it:
-        result = result[1:] + (elem,)
-        yield result
+def grid_as_set(grid, me, op):
+    my_discs = frozenset((x, y) for y, row in enumerate(grid) for x, value in enumerate(row) if value == me)
+    op_discs = frozenset((x, y) for y, row in enumerate(grid) for x, value in enumerate(row) if value == op)
+    return (my_discs, op_discs)
 
-def diag_grid_gen(grid):
-    def diag_row_gen(x, y, max_x):
-        while x < max_x and y >= 0:
-            cell = grid[y][x]
-            yield cell
-            y -= 1
-            x += 1
-    for i in range(3, len(grid) + len(grid[0]) - 4):
-        if i >= len(grid):
-            y = len(grid) - 1
-        else:
-            y = i
-        x = i - y
-        yield diag_row_gen(x, y, len(grid[0]))
+def parse_grid(grid_as_string, me, op):
+    grid = [[int(x) for x in y.split(',')] for y in grid_as_string.split(';')]
+    return grid_as_set(grid, me, op)
 
-def play(grid, column, color):
-    grid = [x[:] for x in grid]
-    for row in reversed(grid):
-        if row[column] == 0:
-            row[column] = color
-            return grid
-    # Can't play there
-    return None
+def nodes(current_discs, other_discs, cols, rows):
+    for move in moves(current_discs, other_discs, cols, rows):
+        yield (move, current_discs | set([move]))
 
-def nodes(grid, player):
-    l = len(grid[0])
-    for i in sorted(range(l), key=lambda x: abs(x - l // 2)):
-        new_grid = play(grid, i, player)
-        if new_grid:
-            yield i, new_grid
+def moves(current_discs, other_discs, cols, rows):
+    for x in range(cols):
+        for y in range(rows-1, -1, -1):
+            if (x, y) not in other_discs and (x, y) not in current_discs:
+                yield (x, y)
+                break
+
+def print_grid(my_discs, op_discs):
+    print '+---' * 7 + '+'
+    for y in range(6):
+        print '|',
+        for x in range(7):
+            if (x, y) in my_discs:
+                print 1,'|',
+            elif (x, y) in op_discs:
+                print 2,'|',
+            else:
+                print 0,'|',
+        print '\n',
+        print '+---' * 7 + '+'
+
+def engine_grid(my_discs, op_discs):
+    grid = []
+    for y in range(6):
+        row = []
+        for x in range(7):
+            if (x, y) in my_discs:
+                row.append(1)
+            elif (x, y) in op_discs:
+                row.append(2)
+            else:
+                row.append(0)
+        grid.append(row)
+    return grid
