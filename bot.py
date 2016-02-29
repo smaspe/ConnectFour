@@ -30,13 +30,9 @@ def select_move(my_discs, op_discs, op_move, time, settings):
         current_value = evaluation.scan(new_discs, disc)
         if current_value == evaluation.WIN:
             moves = [(current_value, [disc])]
-            value = current_value
             break
         move = minimax(new_discs, op_discs, depth - 1, False, settings['field_columns'], settings['field_rows'])
         move[1].append(disc)
-        if not moves or move[0] > moves[0][0]:
-            value = move[0]
-            moves = []
         moves.append(move)
     if not moves or not moves[0] or not moves[0][1]:
         # Nothing of worth was found (we probably lost)
@@ -45,6 +41,9 @@ def select_move(my_discs, op_discs, op_move, time, settings):
         print 'minimax result'
         for _move in moves:
             print _move
+
+    value = max(move[0] for move in moves)
+    moves = filter(lambda move: move[0] == value, moves)
 
     if value == evaluation.LOSE:
         # Those moves are losing, take the one that takes the longest
