@@ -29,7 +29,8 @@ def select_move(my_discs, op_discs, op_move, time, settings):
     for disc, new_discs in utils.nodes(my_discs, op_discs, settings['field_columns'], settings['field_rows']):
         current_value = evaluation.scan(new_discs, disc)
         if current_value == evaluation.WIN:
-            moves.append((current_value, [disc]))
+            moves = [(current_value, [disc])]
+            value = current_value
             break
         move = minimax(new_discs, op_discs, depth - 1, False, settings['field_columns'], settings['field_rows'])
         move[1].append(disc)
