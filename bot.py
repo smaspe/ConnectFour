@@ -13,7 +13,7 @@ op_move = ()
 depth = 4
 
 def select_move(my_discs, op_discs, op_move, time, settings):
-    global current_depth
+    global depth
     if time == settings['timebank']:
         depth += 1
     elif time == settings['time_per_move']:
